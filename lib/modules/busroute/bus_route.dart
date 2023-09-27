@@ -1,6 +1,6 @@
 import 'package:onenizam/headers.dart';
 
-class BusRoute {
+class Busroute {
   final String routeName;
   final bool isSpeacial;
   final String symbol;
@@ -22,19 +22,34 @@ class BusRoute {
     return null;
   }
 
-  BusRoute({
+  Busroute({
     required this.routeName,
     required this.isSpeacial,
     required this.symbol,
   });
 
-  // json decode and extract values from json map
-  factory BusRoute.fromJsonString(String jsonString) {
-    final Map<String, dynamic> json = jsonDecode(jsonString);
-    return BusRoute.fromJson(json);
+  Busroute.add({
+    required String dRouteName,
+    required bool? dIsSpeacial,
+    required String? dSymbol,
+  })  : routeName = dRouteName.trim(),
+        isSpeacial = dIsSpeacial ?? false,
+        symbol = getSymbol(routeName: dRouteName, symbol: dSymbol);
+
+  static String getSymbol(
+      {required String routeName, required String? symbol}) {
+    symbol = symbol != null ? symbol.trim() : '';
+    symbol = symbol.isEmpty ? routeName[routeName.length - 1] : symbol;
+    return symbol;
   }
-  factory BusRoute.fromJson(Map<String, dynamic> json) {
-    return BusRoute(
+
+  // json decode and extract values from json map
+  factory Busroute.fromJsonString(String jsonString) {
+    final Map<String, dynamic> json = jsonDecode(jsonString);
+    return Busroute.fromJson(json);
+  }
+  factory Busroute.fromJson(Map<String, dynamic> json) {
+    return Busroute(
       isSpeacial: json[isSpeacial_] ?? false,
       routeName: json[routeName_],
       symbol: json[symbol_],

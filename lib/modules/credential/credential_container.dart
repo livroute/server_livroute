@@ -4,12 +4,12 @@ class CredentialContainer {
   static DbCollection? get coll => MongoDbFunc.credential;
 
   static Future<ApiResponse> loginAccount({
-    required String? rollNo,
+    required String? rollno,
     required String? password,
     required String? token,
   }) async {
     // ROll no or Username one should be must
-    final err1 = Credential.isValidRollNo(rollNo);
+    final err1 = Credential.isValidRollNo(rollno);
     if (password == null && token == null) {
       ApiResponseHandler.ifExistThrowErrors([err1, 'Enter Password or Token']);
     }
@@ -21,37 +21,40 @@ class CredentialContainer {
     ApiResponseHandler.ifExistThrowErrors([err1, err2]);
 
     return await loginAccountWV(
-      rollNo!,
+      rollno!,
       password!,
       token,
     );
   }
 
   static Future<ApiResponse> loginAccountWV(
-    String rollNo,
+    String rollno,
     String password,
     String? token,
   ) async {
     if (token != null) {
-      final isValid = AccessContianer.isValid(rollNo, token);
-      if (isValid) {
+      final acess = AccessContianer.isValid(rollno: rollno, token: token);
+      if (acess != null) {
         return ApiResponse.successData({Access.token_: token});
       }
     }
 
-    final filter = where.eq(Credential.rollNo_, rollNo);
+    final filter = where.eq(Credential.rollno_, rollno);
     final res = await coll!.findOne(filter);
 
     if (res != null) {
       if (res[Credential.password_] == password) {
         // Account Logined Successfully
-        final newToken = AccessContianer.addAccessWV(res[Credential.username_]);
+        final newToken = AccessContianer.addAccessWV(
+          res[Credential.rollno_],
+          res[Credential.securityLevel_] ?? 10,
+        );
         return ApiResponse.successData({Access.token_: newToken});
       } else {
         return ApiResponse.fail('Incorrect Password');
       }
     } else {
-      return ApiResponse.fail('rollNo not register with us');
+      return ApiResponse.fail('rollno not register with us');
     }
   }
 }

@@ -1,44 +1,70 @@
 import 'package:onenizam/headers.dart';
 
 class AccessContianer {
-  static Map<String, String> data = {};
+  static Map<String, Access> data = {};
 
-  static String addAccessWV(String rollNo) {
-    //if exist return already existed token
-    final t = data[rollNo];
-    if (t != null) return t;
+  static String addAccessWV(String rollno, int securityLevel) {
+    print("ADDEDD CALLEDD");
+    final t = data[rollno];
+
+    if (t != null) return t.token;
     // else create a new token and return it
     final token = ObjectId().toHexString();
-    data[rollNo] = token;
+    data[rollno] = Access(
+      token: token,
+      rollno: rollno,
+      securityLevel: securityLevel,
+    );
+
+    print('added ${data[rollno]}');
+
     return token;
   }
 
-  static bool isValid(String? rollNo, String? token) {
-    final err1 = Credential.isValidRollNo(rollNo);
+  static Access? isValid({required String? rollno, required String? token}) {
+    final err1 = Credential.isValidRollNo(rollno);
     final err2 = Access.isValidToken(token);
     ApiResponseHandler.ifExistThrowErrors([err1, err2]);
-    return _isValidWV(rollNo!, token!);
+    return _isValidWV(rollno: rollno!, token: token!);
   }
 
-  static bool _isValidWV(String rollNo, String token) {
-    return data[rollNo] == token;
+  static Access? _isValidWV({required String rollno, required String token}) {
+    print("DATA $data");
+    final access = data[rollno];
+    print("HI $access");
+    return access == null
+        ? null
+        : access.token == token
+            ? access
+            : null;
   }
 
-  static bool isValidAcess(Map<String, String>? access) {
+  static Access? isValidAcess(Map<String, String>? access) {
     if (access == null) {
       ApiResponseHandler.ifExistThrowErrors(['Access Requrired']);
+      return null;
     }
-    access!; // to tell its not null
-    final rollNo = access[Access.rollNo_];
-    final token = access[Access.token_];
-    return isValid(rollNo, token);
+    return isValid(
+      rollno: access[Access.rollno_],
+      token: access[Access.token_],
+    );
   }
 
-  static String addAccess(String? rollNo) {
-    // is valid rollNo
-    final err1 = Credential.isValidRollNo(rollNo);
+  static String addAccess({
+    required String? rollno,
+    required int? securityLevel,
+  }) {
+    // is valid rollno
+    final err1 = Credential.isValidRollNo(rollno);
     ApiResponseHandler.ifExistThrowErrors([err1]);
 
-    return addAccessWV(rollNo!);
+    return addAccessWV(rollno!, securityLevel ?? 10);
+  }
+
+  static int getSecurityLevel(String rollno) {
+    final a = data[rollno];
+    if (a == null) return 10;
+
+    return a.securityLevel;
   }
 }

@@ -2,17 +2,19 @@ import 'package:onenizam/headers.dart';
 
 class Credential {
   final String username;
-  final String rollNo;
+  final String rollno;
   final String password;
+  final int securityLevel;
 
   static const String username_ = 'username';
-  static const String rollNo_ = 'rollno';
+  static const String rollno_ = 'rollno';
   static const String password_ = 'password';
+  static const String securityLevel_ = 'security_level';
 
   static String? isValidRollNo(String? e) {
-    if (e == null || e.isEmpty) return 'Please enter rollNo';
+    if (e == null || e.isEmpty) return 'Please enter rollno';
     //TODO: ADD ROLLNO VALIDATOR
-    // if (emailSyntax.hasMatch(e) == false) return 'Invalid rollNo';
+    // if (emailSyntax.hasMatch(e) == false) return 'Invalid rollno';
     return null;
   }
 
@@ -33,10 +35,20 @@ class Credential {
     return null;
   }
 
+  static String? isValidSecurityLevel(int? secuirtyLevel) {
+    if (secuirtyLevel != null) {
+      if (secuirtyLevel < 1 || secuirtyLevel > 10) {
+        return 'Invalid Security';
+      }
+    }
+    return null;
+  }
+
   const Credential({
     required this.username,
-    required this.rollNo,
+    required this.rollno,
     required this.password,
+    required this.securityLevel,
   });
 
   factory Credential.fromJsonString(String jsonString) {
@@ -47,15 +59,16 @@ class Credential {
   factory Credential.fromJson(Map<String, dynamic> json) {
     return Credential(
       username: json[username_],
-      rollNo: json[rollNo_],
+      rollno: json[rollno_],
       password: json[password_],
+      securityLevel: json[securityLevel_],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       username_: username,
-      rollNo_: rollNo,
+      rollno_: rollno,
       password_: password,
     };
   }

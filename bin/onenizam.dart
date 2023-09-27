@@ -1,4 +1,5 @@
 import 'package:onenizam/headers.dart';
+import 'package:onenizam/modules/busroute/bus_route_rest_api.dart';
 
 void main(List<String> arguments) async {
   await MongoDbFunc.connectToMongoDB();
@@ -9,7 +10,7 @@ void main(List<String> arguments) async {
   // Serve static files (optional)
   // app.mount(AppRoutes.)
   app.mount(AppRoutes.credential, CredentialRestApi().router);
-  // app.mount(AppRoutes.like, LikeRestApi().router);
+  app.mount(AppRoutes.busroute, BusrouteRestApi().router);
   // app.mount(AppRoutes.messaging, MessagingSocketApi().router);
 
   // Listen for incoming connections

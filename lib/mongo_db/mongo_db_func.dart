@@ -9,7 +9,7 @@ class MongoDbFunc {
   static DbCollection? comments;
   static DbCollection? credential;
   static DbCollection? following;
-  static DbCollection? likes;
+  static DbCollection? busroute;
   static DbCollection? message;
   static DbCollection? service;
   static DbCollection? post;
@@ -23,7 +23,7 @@ class MongoDbFunc {
     comments = null;
     credential = null;
     following = null;
-    likes = null;
+    busroute = null;
     message = null;
     service = null;
     post = null;
@@ -32,7 +32,7 @@ class MongoDbFunc {
 
   static _loadDb() {
     credential = _db!.collection(MongoConfig.credentialColl);
-    likes = _db!.collection(MongoConfig.likeColl);
+    busroute = _db!.collection(MongoConfig.likeColl);
     message = _db!.collection(MongoConfig.messageColl);
 
     isConnected = true;

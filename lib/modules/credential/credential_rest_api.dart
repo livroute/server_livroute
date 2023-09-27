@@ -12,7 +12,7 @@ class CredentialRestApi {
       return await ApiResponseHandler.createRoute(() async {
         final data = await ApiResponseHandler.data(request);
         return await CredentialContainer.loginAccount(
-          rollNo: data[Credential.rollNo_],
+          rollno: data[Credential.rollno_],
           password: data[Credential.password_],
           token: data[Access.token_],
         );

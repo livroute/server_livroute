@@ -3,7 +3,7 @@ class AppRoutes {
 
   static const String auth = '/auth';
   static const String credential = '/credential';
-  static const String like = '/like';
+  static const String busroute = '/busroute';
   static const String messaging = '/messaging';
 
   static const String val_ = '<val|.+>';

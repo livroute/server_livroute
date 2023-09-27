@@ -1,17 +1,19 @@
 import 'package:onenizam/headers.dart';
 
 class ApiResponseHandler {
-  static const String username_ = 'username';
+  static const String rollno_ = 'rollno';
   static const String token_ = 'token';
 
   static Future<Response> createRoute(
     Future<ApiResponse> Function() routeCreater,
   ) async {
+    print("HI");
     if (!MongoDbFunc.isConnected) {
       return Response.internalServerError();
     }
     try {
       final res = await routeCreater();
+      print("HII");
       return Response.ok(json.encode(res.toJson()));
     } catch (e) {
       if (e is ApiResponse) {
@@ -26,21 +28,21 @@ class ApiResponseHandler {
   }
 
   static Future<Response> createRouteWithAccess({
-    String? username,
+    String? rollno,
     String? token,
-    required Future<ApiResponse> Function() routeCreater,
+    required Future<ApiResponse> Function(Access access) routeCreater,
   }) async {
     try {
       return await createRoute(
-        () {
-          final isValid = AccessContianer.isValid(username, token);
-          if (!isValid) {
+        () async {
+          final access = AccessContianer.isValid(rollno: rollno, token: token);
+          if (access == null) {
             print("CALLED HERE");
             print("Called Herer");
 
             throw ApiResponseHandler.accessError;
           }
-          return routeCreater();
+          return await routeCreater(access);
         },
       );
     } catch (e) {
@@ -60,15 +62,15 @@ class ApiResponseHandler {
   }
 
   static Future<Response> getAccess({
-    required String accessUsername,
+    required String accessrollno,
     required String token,
-    required Future<dynamic> Function() getter,
+    required Future<dynamic> Function(Access access) getter,
   }) async {
     return await ApiResponseHandler.createRouteWithAccess(
-        username: accessUsername,
+        rollno: accessrollno,
         token: token,
-        routeCreater: () async {
-          final res = await getter();
+        routeCreater: (access) async {
+          final res = await getter(access);
           return ApiResponse.successData(res);
         });
   }
@@ -90,24 +92,24 @@ class ApiResponseHandler {
 
   static Future<String> access(Request request) async {
     try {
-      final username = request.headers[username_];
+      final rollno = request.headers[rollno_];
       final token = request.headers[token_];
-      final isAllowed = AccessContianer.isValid(username, token);
+      final isAllowed = AccessContianer.isValid(rollno: rollno, token: token);
       if (isAllowed == false) throw accessError;
 
-      return username!;
+      return rollno!;
     } catch (e) {
       if (e is ApiResponse) rethrow;
       throw accessError;
     }
   }
 
-  static Future<String> accessVal(String? username, String? token) async {
+  static Future<String> accessVal(String? rollno, String? token) async {
     try {
-      final isAllowed = AccessContianer.isValid(username, token);
+      final isAllowed = AccessContianer.isValid(rollno: rollno, token: token);
       if (isAllowed == false) throw accessError;
 
-      return username!;
+      return rollno!;
     } catch (e) {
       if (e is ApiResponse) rethrow;
       throw accessError;
@@ -145,7 +147,7 @@ class ApiResponseHandler {
   // if unauthorized Access Throw Error
   static void iUATE(Map<String, String>? access) {
     final isValid = AccessContianer.isValidAcess(access);
-    if (!isValid) {
+    if (isValid == null) {
       throw ApiResponse.fail('Invalid Access');
     }
   }
