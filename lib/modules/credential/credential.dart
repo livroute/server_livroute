@@ -41,11 +41,7 @@ class Credential {
 
   factory Credential.fromJsonString(String jsonString) {
     final Map<String, dynamic> json = jsonDecode(jsonString);
-    return Credential(
-      username: json[username_],
-      rollNo: json[rollNo_],
-      password: json[password_],
-    );
+    return Credential.fromJson(json);
   }
 
   factory Credential.fromJson(Map<String, dynamic> json) {
@@ -58,20 +54,6 @@ class Credential {
 
   Map<String, dynamic> toJson() {
     return {
-      username_: username,
-      rollNo_: rollNo,
-      password_: password,
-    };
-  }
-
-  static Map<String, dynamic> clientSide(
-    String token,
-    String username,
-    String rollNo,
-    String password,
-  ) {
-    return {
-      Access.token_: token,
       username_: username,
       rollNo_: rollNo,
       password_: password,
